@@ -1,5 +1,5 @@
 # Logistic Regression : Predict Purchase
-# Logistic regression predicts y values too but here values of y are probabilities i.e. btw 0 & 1.
+# Logistic regression predicts y values too but here value of y is probability i.e. btw 0 & 1.
 
 # Import the dataset
 df1 = read.csv('./data/logr2.csv')
