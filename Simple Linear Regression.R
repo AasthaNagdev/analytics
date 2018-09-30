@@ -1,9 +1,103 @@
 women
 
-reg=lm(weight~height, data=women)
-summary(reg)
-(ndata = data.frame(height= c(58.5, 60.7)))
-(p= predict(reg, newdata = ndata))
+reg=lm(weight~height, data=women) #how to run regression, can be named anything (here it is reg)
+summary(reg)                      # to gte summary stats incl p value for f statistic to test overall significance
+(ndata = data.frame(height= c(58.5, 60.7))) #two x values generated to predict y values
+(p= predict(reg, newdata = ndata)) 
 cbind(ndata, p)
 plot(reg)
 
+
+#Multiple Linear Regression : DV vs more than 1 IVs
+#sales Qty vs price & promotion
+#Predict Sales Qty from Price and Promotion of the Product
+
+
+#Omni Store
+#creating data using Vector
+sales= c(4141,3842,3056,3519,4226, 4630,3507,3754, 5000,5120,4011, 5015,1916,675, 3636,3224,2295, 2730,2618,4421, 4113,3746, 3532, 3825,1096, 761,2088,820,2114, 1882,2159,1602,3354,2927)
+price = c(59,59,59,59,59,59,59,59,59,59,59,59, 79,79,79,79,79,79,79,79,79, 79,79,79,99,99, 99,99,99,99,99,99,99,99)
+promotion= c(200,200,200,200,400,400,400,400, 600,600,600,600,200,200,200,200, 400,400,400,400,600,600,600,600, 200,200,200,200,400,400,400,400,600,600)
+#Create a DF from 3 variables
+omni1 = data.frame(sales,price,promotion)
+head(omni1)
+
+#2nd Method : from CSV file
+#omni2 = read.csv(file.choose())
+
+#3rd Method : from gsheet 
+library(gsheet)
+url = "https://docs.google.com/spreadsheets/d/1h7HU0X_Q4T5h5D1Q36qoK40Tplz94x_HZYHOJJC_edU/edit#gid=1595306231"
+omni3 = as.data.frame(gsheet::gsheet2tbl(url))
+head(omni3)
+#Make one of data frames active
+omni = omni1
+
+head(omni1)
+str(omni1)
+nrow(omni1)
+
+#MLR  Create Multiple Linear Regression
+# we want to see how Sales Qty depend on Price and Promotion Values
+fit2 = lm(sales ~ price + promotion, data=omni1)
+
+# summary statistics of model IMP STEP
+summary(fit2)
+#understand values : R2, AdjR2, Fstats pvalue, Coeff, ***, Residuals
+#F Stats pvalue = 2.86e-10 < 0.05 : Model Exists
+#At least 1 IV can be used to predict sales
+
+fitted(fit2) #predicted values
+omni1$sales #actual values from data set omni1
+residuals(fit2) #residuals directly calculated from the regression model
+summary(residuals(fit2))
+
+
+summary(fit2)$adj.r.squared  # Adjt R2 here > .6 
+#60% of variation in sales is explained by price and promotion
+
+#coefficients b1, b2
+coef(fit2)
+summary(fit2)
+#price  : -53 , pvalue = 9.2e-09 < 0.05 *** : Significant
+#keeping promotion constant, if price is increased by 1 unit, salesqty decreases by 53 units
+#promotion  : +3.6 , pvalue = 9.82e-06 < 0.05 ***: Significant
+#keeping price constant, if promotion is increased by 1 unit, salesqty increases by 53 units
+
+
+#Predict SalesQty for new combination of Values----
+
+#create a dataframe of new sample values
+(ndata2 = data.frame(price=c(60,70), promotion=c(300,400)))
+p2sales = predict(fit2, newdata=ndata2)
+cbind(ndata2, p2sales)
+
+#Assumptions
+par(mfrow=c(2,2))
+plot(fit2)
+plot(fit2,which=1)  # no pattern, equal variance
+plot(fit2,2)  # Residuals are normally distributed
+plot(fit2,3)  # No hetero-scedascity
+plot(fit2,4)  # tells outliers which affect model
+
+omni1[-c(11,14,15),] #to check whether r square value will increase if we remove outliers(11,14,15)
+
+fit3 = lm(sales ~ price + promotion, data=omni1[-c(11,14,15),])
+plot(fit3,4)
+summary(fit3) #Adjusted R square has increased to 83%
+
+#questions
+fit2
+summary(fit2)
+head(omni1)
+cbind(omni1, predict(fit2, newdata = data.frame(omni1$price, omni1$promotion)))
+cbind(omni1, fitted(fit2), omni1$sales - fitted(fit2), residuals(fit2))
+
+#End of Multiple Linear Regression
+
+#when variables are large, select only significant variables
+#Model with higher R2 to be selected
+#other measures of model selection : AIC, BIC, RMSE
+#Dataset can be divided into train(70%) and test(30%) set to check the accuracy
+
+#create model with t
