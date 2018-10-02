@@ -35,24 +35,28 @@ abline(h=0.15)
 rules = apriori(Groceries, parameter = list(supp = 0.005, conf = 0.5, minlen=2))
 rules
 inspect (rules[1:5])
-#Sort Rules by confidence, lift and see the data
+#Sort Rules by confidence, lift and see the data: Lower the supp/conf/lift, more combos or rules will show
 rulesc <- sort (rules, by="confidence", decreasing=TRUE)
 inspect(rulesc[1:5])
 rulesl <- sort (rules, by="lift", decreasing=TRUE)
 inspect (rulesl[1:5])
-#which items have strong confidence and lift 
+#which items have strong confidence and lift, we sort them. 
 
 #How To Control The Number Of Rules in Output ?
 #maxlen, minlen, supp, conf
-rules2 = apriori (Groceries, parameter = list (supp = 0.01, conf = 0.5, minlen=2, maxlen=3)) 
+rules2 = apriori (Groceries, parameter = list (supp = 0.01, conf = 0.5, minlen=2, maxlen=3))
 inspect(rules2[1:15])
 
 #Find what factors influenced an event ‘X’
 rules3 = apriori (data=Groceries, parameter=list (supp=0.002,conf = 0.8), appearance = list (default="lhs",rhs="whole milk"), control = list (verbose=F))
-inspect(rules3[1:5])
 inspect(rules3)
+inspect(rules3[1:5])
+
+#---------------------------
+
 
 #Find out what events were influenced by a given event
+#If you've already vcreated a rule with supp,conf,lift, for analysis using that rule, just create a subset.
 subset1 = subset(rules2, appearance = list (default="lhs",rhs="whole milk"))
 inspect(subset1)
 subset1 = subset(rules2, subset=rhs %in% 'bottled beer' )

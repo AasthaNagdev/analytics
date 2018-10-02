@@ -61,7 +61,7 @@ rules <- apriori(Groceries,  parameter = list(support=.001, conf = .01, minlen=2
 inspect(subset(rules, lhs %pin% 'beer' & rhs %pin% 'beer'))
 
 crossTable(Groceries)['canned beer','bottled beer']
-
+?crossTable
 #the probability of a consecutive purchase (confidence) is pretty small: ~3%
 #this is despite both bottled beer and canned beer being pretty popular purchases
 eclat(Groceries, maxlen=1)
